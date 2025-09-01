@@ -21,55 +21,106 @@ import {
   Line,
 } from "recharts";
 import { Users, Globe, Key, TrendingUp } from "lucide-react";
+import { getDataDashboard } from "@/context/features/dashboard";
+import { useEffect, useState } from "react";
 
-const applicationsData = [
-  {
-    id: 1,
-    name: "E-commerce App",
-    users: 1250,
-    status: "active",
-    lastActive: "2 hours ago",
-  },
-  {
-    id: 2,
-    name: "Blog Platform",
-    users: 890,
-    status: "active",
-    lastActive: "5 minutes ago",
-  },
-  {
-    id: 3,
-    name: "Portfolio Site",
-    users: 340,
-    status: "inactive",
-    lastActive: "2 days ago",
-  },
-  {
-    id: 4,
-    name: "SaaS Dashboard",
-    users: 2100,
-    status: "active",
-    lastActive: "1 hour ago",
-  },
-];
+type Metrics = {
+  active_projects: number;
+  total_api_usage: number;
+  total_users: number;
+  usage_today: number;
+};
 
-const chartData = [
-  { name: "Jan", users: 400 },
-  { name: "Feb", users: 300 },
-  { name: "Mar", users: 600 },
-  { name: "Apr", users: 800 },
-  { name: "May", users: 1000 },
-  { name: "Jun", users: 1200 },
-];
+type ChartApiUsageByApp = {
+  name_app: string;
+  api_calls: number;
+};
 
-const statsData = [
-  { title: "Total Users", value: "4,580", icon: Users, change: "+12%" },
-  { title: "Active Projects", value: "12", icon: Globe, change: "+2" },
-  { title: "API Calls", value: "89.2K", icon: Key, change: "+18%" },
-  { title: "Success Rate", value: "99.8%", icon: TrendingUp, change: "+0.2%" },
-];
+type ChartUsersByApp = {
+  name_app: string;
+  total_users: number;
+};
+
+type Charts = {
+  api_usage_by_app: ChartApiUsageByApp[];
+  users_by_app: ChartUsersByApp[];
+};
+
+type ChartDataItem = {
+  name: string;
+  users: number;
+};
 
 export function Overview() {
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [charts, setCharts] = useState<Charts | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const data = await getDataDashboard();
+        console.log("this data to /overview", data);
+        setMetrics(data?.metrics ?? null);
+        setCharts(data?.charts ?? null);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getData();
+  }, []);
+
+  if (loading) {
+    return <p className="text-center py-10">Loading dashboard data...</p>;
+  }
+
+  const chartData: ChartDataItem[] =
+    charts?.users_by_app?.map((item) => ({
+      name: item.name_app,
+      users: item.total_users,
+    })) || [];
+
+  const applicationsData: ChartDataItem[] =
+    charts?.api_usage_by_app?.map((item) => ({
+      name: item.name_app,
+      users: item.api_calls,
+    })) || [];
+
+  const statsData = [
+    {
+      title: "Total Users",
+      value: metrics?.total_users ?? 0,
+      icon: Users,
+      change: metrics?.total_users
+        ? `${(metrics.total_users * 0.1).toFixed(1)}%`
+        : "0%",
+    },
+    {
+      title: "Active Projects",
+      value: metrics?.active_projects ?? 0,
+      icon: Globe,
+      change: metrics?.active_projects
+        ? `${(metrics.active_projects * 0.1).toFixed(1)}%`
+        : "0%",
+    },
+    {
+      title: "API Calls Today",
+      value: metrics?.usage_today ?? 0,
+      icon: Key,
+      change: metrics?.usage_today
+        ? `${(metrics.usage_today * 0.1).toFixed(1)}%`
+        : "0%",
+    },
+    {
+      title: "Total API Usage",
+      value: metrics?.total_api_usage ?? 0,
+      icon: TrendingUp,
+      change: "/100 to limit",
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -91,20 +142,17 @@ export function Overview() {
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
               <p className="text-xs text-muted-foreground">
-                <span className="text-color">{stat.change}</span> from last
-                month
+                <span className="text-color">{stat.change}</span> usage
               </p>
             </CardContent>
           </Card>
         ))}
       </div>
-
-      {/* Charts */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>User Growth</CardTitle>
-            <CardDescription>Monthly user registration trends</CardDescription>
+            <CardDescription>User distribution by application</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -124,11 +172,12 @@ export function Overview() {
           </CardContent>
         </Card>
 
+        {/* Applications Overview */}
         <Card>
           <CardHeader>
-            <CardTitle>Applications Overview</CardTitle>
+            <CardTitle>API Usage Overview</CardTitle>
             <CardDescription>
-              User distribution across applications
+              Number of API calls by application
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -155,31 +204,35 @@ export function Overview() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {applicationsData.map((app) => (
-              <div
-                key={app.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-medium">{app.name}</h3>
-                    <Badge
-                      variant={
-                        app.status === "active" ? "default" : "secondary"
-                      }
-                    >
-                      {app.status}
-                    </Badge>
+            {chartData.length > 0 ? (
+              chartData.map((app, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-medium">{app.name}</h3>
+                      <Badge
+                        variant={app.users > 0 ? "default" : "secondary"}
+                      >
+                        {app.users > 0 ? "active" : "inactive"}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {app.users} users
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {app.users} users • Last active {app.lastActive}
-                  </p>
+                  <Button variant="outline" size="sm">
+                    View Details
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">
-                  View Details
-                </Button>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center text-muted-foreground">
+                No applications found
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -92,7 +92,6 @@ export function Usage() {
         </Card>
       </div>
 
-      {/* Usage Range Slider */}
       <Card>
         <CardHeader>
           <CardTitle>Usage Forecast</CardTitle>

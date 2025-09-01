@@ -27,12 +27,12 @@ export default function AuthProvider({ children }: ZChildren) {
       async function getUser(){
         const data =  await validateTokenAdmin(getCookies);
         setUser(data?.data)
-        console.log(data.data);
-        
       }
       getUser();
     }
   }, []);
 
+
+  
   return <ContextApi value={{ user, destructToken }}>{children}</ContextApi>;
 }
