@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Zap, ArrowUp, CreditCard, Rocket } from "lucide-react"
 
 export function Usage() {
-  const [currentUsage] = useState(65) // 65% of plan used
+  const [currentUsage] = useState(65) 
   const maxRequests = 10000
   const usedRequests = 6500
 
