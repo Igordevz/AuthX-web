@@ -1,44 +1,48 @@
+"use client"
+
 import { DashboardLayout } from "@/src/components/dashboard/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ExternalLink, Users, Activity, Calendar } from "lucide-react"
 import Link from "next/link"
+import { getDataDashboard } from "@/context/features/dashboard"
+import { useEffect, useState } from "react"
 
-const applications = [
-  {
-    id: "app-1",
-    name: "E-commerce Store",
-    description: "Authentication system for online store",
-    status: "active",
-    users: 1247,
-    requests: 15420,
-    lastActivity: "2 hours ago",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "app-2",
-    name: "Mobile App",
-    description: "User authentication for iOS/Android app",
-    status: "active",
-    users: 892,
-    requests: 8930,
-    lastActivity: "5 minutes ago",
-    createdAt: "2024-02-03",
-  },
-  {
-    id: "app-3",
-    name: "SaaS Platform",
-    description: "Multi-tenant authentication system",
-    status: "inactive",
-    users: 45,
-    requests: 234,
-    lastActivity: "3 days ago",
-    createdAt: "2024-03-10",
-  },
-]
+type Application = {
+  id: string
+  name_app: string
+  description: string
+  createdAt: string
+  api_calls: number
+  count_usage: number
+  last_reset_at: string
+  users: any[]
+  public_key: string
+  secret_key: string
+  owner_email: string
+}
 
 export default function ApplicationsPage() {
+  const [applications, setApplications] = useState<Application[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await getDataDashboard()
+        if (data?.bruteData?.app_providers) {
+          setApplications(data.bruteData.app_providers)
+        }
+      } catch (error) {
+        console.error("Error loading applications:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -50,46 +54,54 @@ export default function ApplicationsPage() {
           <Button className="bg-color hover:bg-lime-500">New Application</Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {applications.map((app) => (
-            <Card key={app.id} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{app.name}</CardTitle>
-                  <Badge variant={app.status === "active" ? "default" : "secondary"}>{app.status}</Badge>
-                </div>
-                <CardDescription>{app.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span>{app.users.toLocaleString()} users</span>
+        {loading ? (
+          <div>Loading applications...</div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {applications.map((app) => (
+              <Card key={app.id} className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{app.name_app}</CardTitle>
+                    <Badge variant={app.count_usage > 0 ? "default" : "secondary"}>
+                      {app.count_usage > 0 ? "active" : "inactive"}
+                    </Badge>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-muted-foreground" />
-                    <span>{app.requests.toLocaleString()} requests</span>
+                  <CardDescription>{app.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>{app.users.length} users</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-muted-foreground" />
+                      <span>{app.api_calls.toLocaleString()} requests</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span>Created {new Date(app.createdAt).toLocaleDateString()}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span>Created {new Date(app.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
 
-                <div className="text-sm text-muted-foreground">Last activity: {app.lastActivity}</div>
+                  <div className="text-sm text-muted-foreground">
+                    Last reset: {new Date(app.last_reset_at).toLocaleString()}
+                  </div>
 
-                <div className="flex gap-2">
-                  <Button asChild variant="outline" size="sm" className="flex-1 bg-transparent">
-                    <Link href={`/dashboard/applications/${app.id}`}>
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Details
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <div className="flex gap-2">
+                    <Button asChild variant="outline" size="sm" className="flex-1 bg-transparent">
+                      <Link href={`/dashboard/applications/${app.id}`}>
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        View Details
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </DashboardLayout>
   )

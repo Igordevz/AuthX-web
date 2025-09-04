@@ -11,7 +11,10 @@ export const getDataDashboard =  async () => {
         jwt: getCookies
       }
     })
+    console.log("this is the dashboard data", dashboard);
+    
     return dashboard?.data
+
   } catch (error) {
     toast("Session Expired", {
       description: "Your authentication token has expired. Please sign in again.",

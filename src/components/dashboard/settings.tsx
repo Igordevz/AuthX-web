@@ -17,8 +17,7 @@ export function Settings() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const { toast } = useToast()
 
-  const privateKey = "PRIVATE_KEY_PLACEHOLDER"
-  const publicKey = "PRIVATE_KEY_PLACEHOLDER"
+
 
   const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text)
@@ -63,92 +62,6 @@ export function Settings() {
            keys</p>
       </div>
 
-      {/* API Keys */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5" />
-              Private Key
-            </CardTitle>
-            <CardDescription>Keep this secret! Use for server-side operations</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Private Key</Label>
-              <div className="flex gap-2">
-                <Input
-                  type={showPrivateKey ? "text" : "password"}
-                  value={privateKey}
-                  readOnly
-                  className="font-mono text-sm"
-                />
-                <Button variant="outline" size="icon" onClick={() => setShowPrivateKey(!showPrivateKey)}>
-                  {showPrivateKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-                <Button variant="outline" size="icon" onClick={() => copyToClipboard(privateKey, "Private key")}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <Badge variant="destructive" className="w-fit">
-              <Shield className="h-3 w-3 mr-1" />
-              Keep Secret
-            </Badge>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5" />
-              Public Key
-            </CardTitle>
-            <CardDescription>Safe to use in client-side applications</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Public Key</Label>
-              <div className="flex gap-2">
-                <Input
-                  type={showPublicKey ? "text" : "password"}
-                  value={publicKey}
-                  readOnly
-                  className="font-mono text-sm"
-                />
-                <Button variant="outline" size="icon" onClick={() => setShowPublicKey(!showPublicKey)}>
-                  {showPublicKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-                <Button variant="outline" size="icon" onClick={() => copyToClipboard(publicKey, "Public key")}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <Badge variant="secondary" className="w-fit">
-              Client-Safe
-            </Badge>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Regenerate Keys */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <RefreshCw className="h-5 w-5" />
-            Regenerate API Keys
-          </CardTitle>
-          <CardDescription>Generate new API keys. This will invalidate your current keys.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button variant="destructive" onClick={regenerateKeys}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Regenerate Keys
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Change Password */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

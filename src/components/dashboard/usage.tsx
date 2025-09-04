@@ -1,43 +1,110 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Zap, ArrowUp, CreditCard, Rocket } from "lucide-react"
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Zap, ArrowUp, CreditCard, Rocket } from "lucide-react";
+import { getDataDashboard } from "@/context/features/dashboard";
+
+type Metrics = {
+  maxRequests: number;
+  activeProjects: number;
+  totalUsers: number;
+  totalApiCalls: number;
+  apiCallsToday: number;
+};
+
+type ChartApiUsageByApp = {
+  appName: string;
+  apiCalls: number;
+};
+
+type ChartUsersByApp = {
+  appName: string;
+  userCount: number;
+};
+
+type Charts = {
+  apiUsageByApp: ChartApiUsageByApp[];
+  usersByApp: ChartUsersByApp[];
+  emailVerification: {
+    verified: number;
+    unverified: number;
+  };
+};
 
 export function Usage() {
-  const [currentUsage] = useState(65) 
-  const maxRequests = 10000
-  const usedRequests = 6500
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [charts, setCharts] = useState<Charts | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const currentUsage = metrics ? (metrics.apiCallsToday / metrics.maxRequests) * 100 : 0;
 
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const data = await getDataDashboard();
+        console.log("this data to /overview", data);
+        setMetrics(data?.metrics ?? null);
+        setCharts(data?.charts ?? null);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getData();
+  }, []);
   const plans = [
     {
       name: "Pro Plan",
       price: "$29/month",
-      features: ["50,000 API calls", "Priority support", "Advanced analytics", "Custom domains"],
+      features: [
+        "50,000 API calls",
+        "Priority support",
+        "Advanced analytics",
+        "Custom domains",
+      ],
       popular: true,
     },
     {
       name: "Enterprise",
       price: "$99/month",
-      features: ["Unlimited API calls", "24/7 support", "Custom integrations", "SLA guarantee"],
+      features: [
+        "Unlimited API calls",
+        "24/7 support",
+        "Custom integrations",
+        "SLA guarantee",
+      ],
       popular: false,
     },
     {
       name: "Turbo Boost",
       price: "$9/month",
-      features: ["Extra 25,000 API calls", "Faster response times", "Extended rate limits"],
+      features: [
+        "Extra 25,000 API calls",
+        "Faster response times",
+        "Extended rate limits",
+      ],
       popular: false,
     },
-  ]
+  ];
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Usage & Billing</h1>
-        <p className="text-muted-foreground">Monitor your API usage and upgrade your plan</p>
+        <p className="text-muted-foreground">
+          Monitor your API usage and upgrade your plan
+        </p>
       </div>
 
       {/* Current Usage */}
@@ -55,14 +122,19 @@ export function Usage() {
               <div className="flex justify-between text-sm">
                 <span>Used</span>
                 <span>
-                  {usedRequests.toLocaleString()} / {maxRequests.toLocaleString()}
+                  {metrics?.apiCallsToday.toLocaleString()} /{" "}
+                  {metrics?.maxRequests.toLocaleString()}
                 </span>
               </div>
               <Progress value={currentUsage} className="h-2" />
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Badge variant={currentUsage > 80 ? "destructive" : "secondary"}>{currentUsage}% used</Badge>
-              <span className="text-muted-foreground">{maxRequests - usedRequests} calls remaining</span>
+              <Badge variant={currentUsage > 80 ? "destructive" : "secondary"}>
+                {Math.round(currentUsage)}% used
+              </Badge>
+              <span className="text-muted-foreground">
+                {metrics ? metrics.maxRequests - metrics.apiCallsToday : 0} calls remaining
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -97,7 +169,8 @@ export function Usage() {
           <CardTitle>Usage Forecast</CardTitle>
           <CardDescription>
             Based on your current usage pattern, you'll use approximately{" "}
-            {Math.round((usedRequests / new Date().getDate()) * 30)} calls this month
+            {metrics ? Math.round((metrics.apiCallsToday / new Date().getDate()) * 30) : 0} calls this
+            month
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -112,12 +185,17 @@ export function Usage() {
               <div className="h-2 bg-muted rounded-full">
                 <div
                   className="h-2 bg-color rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min((usedRequests / 100000) * 100, 100)}%` }}
+                  style={{
+                    width: `${metrics ? Math.min((metrics.apiCallsToday / 100000) * 100, 100) : 0}%`,
+                  }}
                 />
               </div>
               <div
                 className="absolute top-0 w-4 h-4 bg-color rounded-full border-2 border-white shadow-lg transform -translate-y-1"
-                style={{ left: `${Math.min((usedRequests / 100000) * 100, 100)}%`, marginLeft: "-8px" }}
+                style={{
+                  left: `${metrics ? Math.min((metrics.apiCallsToday / 100000) * 100, 100) : 0}%`,
+                  marginLeft: "-8px",
+                }}
               />
             </div>
           </div>
@@ -129,16 +207,23 @@ export function Usage() {
         <h2 className="text-2xl font-bold mb-4">Turbocharge Your Project</h2>
         <div className="grid gap-4 md:grid-cols-3">
           {plans.map((plan) => (
-            <Card key={plan.name} className={plan.popular ? "border-color shadow-lg" : ""}>
+            <Card
+              key={plan.name}
+              className={plan.popular ? "border-color shadow-lg" : ""}
+            >
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Rocket className="h-5 w-5" />
                     {plan.name}
                   </CardTitle>
-                  {plan.popular && <Badge className="bg-color text-white">Popular</Badge>}
+                  {plan.popular && (
+                    <Badge className="bg-color text-white">Popular</Badge>
+                  )}
                 </div>
-                <CardDescription className="text-2xl font-bold text-foreground">{plan.price}</CardDescription>
+                <CardDescription className="text-2xl font-bold text-foreground">
+                  {plan.price}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="space-y-2 text-sm">
@@ -150,7 +235,9 @@ export function Usage() {
                   ))}
                 </ul>
                 <Button
-                  className={`w-full ${plan.popular ? "bg-color hover:bg-color/90 text-white" : ""}`}
+                  className={`w-full ${
+                    plan.popular ? "bg-color hover:bg-color/90 text-white" : ""
+                  }`}
                   variant={plan.popular ? "default" : "outline"}
                 >
                   {plan.popular ? "Upgrade Now" : "Choose Plan"}
@@ -161,5 +248,5 @@ export function Usage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

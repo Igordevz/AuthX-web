@@ -25,25 +25,30 @@ import { getDataDashboard } from "@/context/features/dashboard";
 import { useEffect, useState } from "react";
 
 type Metrics = {
-  active_projects: number;
-  total_api_usage: number;
-  total_users: number;
-  usage_today: number;
+  maxRequests: number;
+  activeProjects: number;
+  totalUsers: number;
+  totalApiCalls: number;
+  apiCallsToday: number;
 };
 
 type ChartApiUsageByApp = {
-  name_app: string;
-  api_calls: number;
+  appName: string;
+  apiCalls: number;
 };
 
 type ChartUsersByApp = {
-  name_app: string;
-  total_users: number;
+  appName: string;
+  userCount: number;
 };
 
 type Charts = {
-  api_usage_by_app: ChartApiUsageByApp[];
-  users_by_app: ChartUsersByApp[];
+  apiUsageByApp: ChartApiUsageByApp[];
+  usersByApp: ChartUsersByApp[];
+  emailVerification: {
+    verified: number;
+    unverified: number;
+  };
 };
 
 type ChartDataItem = {
@@ -77,47 +82,47 @@ export function Overview() {
   }
 
   const chartData: ChartDataItem[] =
-    charts?.users_by_app?.map((item) => ({
-      name: item.name_app,
-      users: item.total_users,
+    charts?.usersByApp?.map((item) => ({
+      name: item.appName,
+      users: item.userCount,
     })) || [];
 
   const applicationsData: ChartDataItem[] =
-    charts?.api_usage_by_app?.map((item) => ({
-      name: item.name_app,
-      users: item.api_calls,
+    charts?.apiUsageByApp?.map((item) => ({
+      name: item.appName,
+      users: item.apiCalls,
     })) || [];
 
   const statsData = [
     {
       title: "Total Users",
-      value: metrics?.total_users ?? 0,
+      value: metrics?.totalUsers ?? 0,
       icon: Users,
-      change: metrics?.total_users
-        ? `${(metrics.total_users * 0.1).toFixed(1)}%`
+      change: metrics?.totalUsers
+        ? `${(metrics.totalUsers * 0.1).toFixed(1)}%`
         : "0%",
     },
     {
       title: "Active Projects",
-      value: metrics?.active_projects ?? 0,
+      value: metrics?.activeProjects ?? 0,
       icon: Globe,
-      change: metrics?.active_projects
-        ? `${(metrics.active_projects * 0.1).toFixed(1)}%`
+      change: metrics?.activeProjects
+        ? `${(metrics.activeProjects * 0.1).toFixed(1)}%`
         : "0%",
     },
     {
       title: "API Calls Today",
-      value: metrics?.usage_today ?? 0,
+      value: metrics?.apiCallsToday ?? 0,
       icon: Key,
-      change: metrics?.usage_today
-        ? `${(metrics.usage_today * 0.1).toFixed(1)}%`
+      change: metrics?.apiCallsToday
+        ? `${(metrics.apiCallsToday * 0.1).toFixed(1)}%`
         : "0%",
     },
     {
       title: "Total API Usage",
-      value: metrics?.total_api_usage ?? 0,
+      value: metrics?.totalApiCalls ?? 0,
       icon: TrendingUp,
-      change: "/100 to limit",
+      change: `${metrics?.maxRequests ? Math.round((metrics.totalApiCalls / metrics.maxRequests) * 100) : 0}% of limit`,
     },
   ];
 
@@ -164,7 +169,7 @@ export function Overview() {
                 <Line
                   type="monotone"
                   dataKey="users"
-                  stroke="rgb(163 230 53)"
+                  stroke="rgb(128, 65, 254)"
                   strokeWidth={2}
                 />
               </LineChart>
@@ -187,7 +192,7 @@ export function Overview() {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="users" fill="rgb(163 230 53)" />
+                <Bar dataKey="users" fill="rgb(128, 65, 254)" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
