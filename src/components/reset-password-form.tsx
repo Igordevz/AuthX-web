@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { KeyRound, Eye, EyeOff, CheckCircle } from "lucide-react"
+import { KeyRound, Eye, EyeOff } from "lucide-react"
+
+interface ResetPasswordFormProps {
+  email?: string | null
+}
 
 const resetPasswordSchema = z
   .object({
@@ -22,59 +26,25 @@ const resetPasswordSchema = z
     path: ["confirmPassword"],
   })
 
-type ResetPasswordForm = z.infer<typeof resetPasswordSchema>
+type ResetPasswordInputs = z.infer<typeof resetPasswordSchema>
 
-export function ResetPasswordForm() {
-  const [isLoading, setIsLoading] = useState(false)
+export function ResetPasswordForm({ email }: ResetPasswordFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [isSuccess, setIsSuccess] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-    const emailParam = searchParams.get("email")
-    if (emailParam) {
-      setEmail(emailParam)
-    }
-  }, [searchParams])
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ResetPasswordForm>({
+  } = useForm<ResetPasswordInputs>({
     resolver: zodResolver(resetPasswordSchema),
   })
 
-  const onSubmit = async (data: ResetPasswordForm) => {
-    setIsLoading(true)
-
-    // Simular validação do código e reset da senha
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    setIsSuccess(true)
-    setIsLoading(false)
-
-    // Redirecionar para login após 3 segundos
-    setTimeout(() => {
-      router.push("/login")
-    }, 3000)
-  }
-
-  if (isSuccess) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center space-y-4">
-            <CheckCircle className="h-16 w-16 text-color mx-auto" />
-            <h2 className="text-xl font-semibold">Password reset successfully!</h2>
-            <p className="text-muted-foreground">You will be redirected to login in a few seconds...</p>
-          </div>
-        </CardContent>
-      </Card>
-    )
+  const onSubmit = (data: ResetPasswordInputs) => {
+    console.log(data)
+    // Implementar a lógica de reset de senha aqui
+    router.push('/login')
   }
 
   return (
@@ -98,11 +68,12 @@ export function ResetPasswordForm() {
               id="code"
               type="text"
               placeholder="123456"
-              maxLength={6}
-              {...register("code")}
-              className={errors.code ? "border-red-500" : ""}
+              {...register('code')}
+              className={errors.code ? 'border-red-500' : ''}
             />
-            {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>}
+            {errors.code && (
+              <p className="text-sm text-red-500">{errors.code.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -110,10 +81,10 @@ export function ResetPasswordForm() {
             <div className="relative">
               <Input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your new password"
-                {...register("password")}
-                className={errors.password ? "border-red-500" : ""}
+                {...register('password')}
+                className={errors.password ? 'border-red-500' : ''}
               />
               <Button
                 type="button"
@@ -122,10 +93,16 @@ export function ResetPasswordForm() {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </Button>
             </div>
-            {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -133,10 +110,10 @@ export function ResetPasswordForm() {
             <div className="relative">
               <Input
                 id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Confirm your new password"
-                {...register("confirmPassword")}
-                className={errors.confirmPassword ? "border-red-500" : ""}
+                {...register('confirmPassword')}
+                className={errors.confirmPassword ? 'border-red-500' : ''}
               />
               <Button
                 type="button"
@@ -145,14 +122,22 @@ export function ResetPasswordForm() {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </Button>
             </div>
-            {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>}
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
-          <Button type="submit" className="w-full bg-color hover:bg-lime-500 text-black" disabled={isLoading}>
-            {isLoading ? "Resetting..." : "Reset password"}
+          <Button type="submit" className="w-full">
+            Reset password
           </Button>
         </form>
       </CardContent>

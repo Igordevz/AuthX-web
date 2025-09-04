@@ -1,4 +1,4 @@
-import { ResetPasswordForm } from "@/src/components/reset-password-form"
+import { ResetPasswordWrapper } from "@/src/components/reset-password-wrapper"
 
 export default function ResetPasswordPage() {
   return (
@@ -8,8 +8,8 @@ export default function ResetPasswordPage() {
           <h1 className="text-2xl font-bold text-foreground">Reset Password</h1>
           <p className="text-muted-foreground mt-2">Enter the code sent to your email and your new password</p>
         </div>
-        <ResetPasswordForm/>
+        <ResetPasswordWrapper />
       </div>
     </div>
   )
-} 
+}
