@@ -1,5 +1,6 @@
 import { Shield } from "lucide-react"
-
+import Image from "next/image"
+import logo from "../../public/logo.png"
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground py-12 px-4">
@@ -8,12 +9,12 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-lime-400">
-                <Shield className="h-5 w-5 text-black" />
+                <Image src={logo} alt="logo"/>
               </div>
-              <span className="text-xl font-bold">AuthAPI</span>
+              <span className="text-xl font-bold">AuthX</span>
             </div>
             <p className="text-sm text-primary-foreground/80">
-              The simplest way to add authentication to your project.
+              The simplest way to add authentication to your frontend - we handle the backend.
             </p>
           </div>
 
@@ -97,7 +98,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-primary-foreground/60">© 2024 AuthAPI. All rights reserved.</p>
+          <p className="text-sm text-primary-foreground/60">© 2024 AuthX. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
               Privacy

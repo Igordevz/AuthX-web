@@ -65,10 +65,10 @@ export function Pricing() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, index) => (
-            <Card key={index} className={`relative ${plan.popular ? "border-lime-400 shadow-lg scale-105" : ""}`}>
+            <Card key={index} className={`relative ${plan.popular ? "border-violet-400 shadow-lg scale-105" : ""}`}>
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-lime-400 text-black px-4 py-1 rounded-full text-sm font-medium flex items-center">
+                  <div className="bg-violet-400 text-black px-4 py-1 rounded-full text-sm font-medium flex items-center">
                     <Star className="h-4 w-4 mr-1" />
                     Most Popular
                   </div>
@@ -88,14 +88,14 @@ export function Pricing() {
                 <ul className="space-y-3">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center">
-                      <Check className="h-4 w-4 text-lime-400 mr-3 flex-shrink-0" />
+                      <Check className="h-4 w-4 text-violet-400 mr-3 flex-shrink-0" />
                       <span className="text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Button
-                  className={`w-full ${plan.popular ? "bg-lime-400 text-black hover:bg-lime-500" : ""}`}
+                  className={`w-full ${plan.popular ? "bg-violet-400 text-black hover:bg-violet-500" : ""}`}
                   variant={plan.buttonVariant}
                   size="lg"
                 >

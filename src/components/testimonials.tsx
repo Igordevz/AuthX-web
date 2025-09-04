@@ -7,7 +7,7 @@ export function Testimonials() {
       name: "Maria Silva",
       role: "Founder, TechStart",
       content:
-        "Amazing! I was able to implement complete authentication in my app in less than 30 minutes. No headaches with code.",
+        "Amazing! I was able to integrate authentication into my React app in less than 30 minutes. The API is so straightforward!",
       rating: 5,
       avatar: "/professional-woman.png",
     },
@@ -15,7 +15,7 @@ export function Testimonials() {
       name: "John Santos",
       role: "Designer, CreativeStudio",
       content:
-        "As a designer, I always had difficulty with the technical part. AuthAPI made everything simple and visual. I recommend it!",
+        "As a frontend developer, I was dreading building an auth system. AuthAPI's ready-to-use endpoints made it a breeze. I recommend it!",
       rating: 5,
       avatar: "/man-designer.png",
     },

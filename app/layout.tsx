@@ -8,9 +8,9 @@ import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "@/context/auth";
 
 export const metadata: Metadata = {
-  title: "AuthAPI - Simple Authentication for Everyone",
+  title: "AuthAPI - Ready-to-Use Authentication API",
   description:
-    "Easy-to-use authentication API, even without programming knowledge",
+    "Integrate complete authentication into your frontend with our ready-to-use API - no backend development needed",
   generator: "v0.app",
 };
 

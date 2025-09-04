@@ -90,12 +90,12 @@ export default Login;`
   const [language, setLanguage] = useState("nodejs")
 
   return (
-    <section id="example" className="py-20 px-4">
+    <section id="example" className="py-20 px-4 z-10">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple as Copy and Paste</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready-to-Use API</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            See how easy it is to integrate our API into any project
+            Connect your frontend to our authentication API with just a few lines of code
           </p>
         </div>
 
@@ -141,7 +141,7 @@ export default Login;`
                 }
                 style={dracula}
                 customStyle={{
-                  fontFamily: "JetBrains Mono",
+                  fontFamily: "Monaco, Consolas, 'Courier New', monospace",
                   borderRadius: "0.5rem",
                   padding: "1rem",
                   background: "#1a1a1a"
