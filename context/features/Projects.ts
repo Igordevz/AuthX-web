@@ -2,7 +2,7 @@ import { InstanceApi } from "@/lib/axios";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 
-export const createNewProject = async (name_app: string) => {
+export const createNewProject = async (name_app:string, description: string) => {
   const token = Cookies.get("auth"); // pegar cookie no momento da execução
 
   if (!token) {
@@ -19,31 +19,31 @@ export const createNewProject = async (name_app: string) => {
   try {
     const response = await InstanceApi.post(
       "/create/app",
-      { name_app },
+      { name_app, description },
       {
         headers: { jwt: token },
       }
     );
-
     toast("Project Created", {
       description: `The project "${name_app}" was successfully created.`,
       action: {
         label: "Close",
-        onClick: () => location.replace("/dashboard"),
+        onClick: () => {},
       },
     });
+    location.replace("/dashboard")
 
-    return response.data; // retorna o resultado da API
+    return response.data; 
   } catch (error: any) {
     console.log(error);
-    
+    Cookies.remove("auth");
+    location.reload();
     toast("Session Expired", {
       description: "Your authentication token has expired. Please sign in again.",
       action: {
         label: "Sign In",
         onClick: () => {
-          Cookies.remove("auth");
-          location.reload();
+       
         },
       },
     });

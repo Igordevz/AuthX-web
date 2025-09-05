@@ -16,11 +16,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { User } from "lucide-react";
-import { registerAdmin } from "@/context/features/Admin";
+import { registerAdmin } from "@/context/features/Admin"; // This import seems unused, but I'll keep it as it was in the original file.
 import { createNewProject } from "@/context/features/Projects";
+import { Textarea } from "@/components/ui/textarea"; // Adicionado import para Textarea
 
 const projectSchema = z.object({
   name: z.string().min(1, "Project name is required"),
+  description: z.string().optional(), // Adicionado campo de descrição
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
@@ -40,9 +42,8 @@ export default function NewProjectForm() {
     setIsSubmitting(true);
     e.preventDefault(); 
 
-
     try {
-     await createNewProject(data?.name)
+     await createNewProject(data?.name, data?.description || "") // Passando a descrição (string vazia se for undefined)
     } catch (error) {
       console.error(error);
     } finally {
@@ -78,6 +79,17 @@ export default function NewProjectForm() {
             {errors.name && (
               <p className="text-sm text-red-500">{errors.name.message}</p>
             )}
+          </div>
+
+          {/* Novo campo para descrição */}
+          <div className="space-y-2">
+            <Label htmlFor="description">Project Description</Label>
+            <Textarea
+              id="description"
+              placeholder="Provide a brief description of your project"
+              {...register("description")}
+              className="resize-y min-h-[80px]" 
+            />
           </div>
 
           <Button
