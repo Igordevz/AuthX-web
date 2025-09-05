@@ -34,7 +34,7 @@ export function Header() {
             size="sm"
             className="bg-violet-400 text-black hover:bg-violet-500 dark:bg-violet-400 dark:text-black dark:hover:bg-violet-500"
           >
-            Get Started
+           <Link href="/dashboard">Get Started</Link>
           </Button>
         </div>
       </div>

@@ -112,7 +112,7 @@ export default function RegisterForm() {
           {/* Submit */}
           <Button
             type="submit"
-            className="w-full bg-color hover:bg-lime-500 text-black font-medium"
+            className="w-full bg-color hover:bg-violet-500 text-black font-medium"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Creating account..." : "Create Account"}

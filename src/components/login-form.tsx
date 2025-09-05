@@ -92,7 +92,7 @@ export function LoginForm() {
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full bg-color hover:bg-lime-500 text-black">
+          <Button type="submit" className="w-full bg-color hover:bg-violet-500 text-black">
             Sign In
           </Button>
           <div className="text-center text-sm text-muted-foreground">
