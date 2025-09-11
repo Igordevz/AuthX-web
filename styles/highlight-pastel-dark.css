@@ -1,0 +1,63 @@
+/* Custom Highlight.js Pastel Dark Theme */
+.hljs {
+  background: #282C34 !important; /* Black background */
+  color: #ABB2BF !important; /* Default text color */
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #5C6370 !important; /* Light gray/blue for comments */
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-meta {
+  color: #C792EA !important; /* Light purple for keywords */
+}
+
+.hljs-string,
+.hljs-attr,
+.hljs-regexp {
+  color: #98C379 !important; /* Light green for strings */
+}
+
+.hljs-number,
+.hljs-variable,
+.hljs-template-variable {
+  color: #D19A66 !important; /* Light orange for numbers/variables */
+}
+
+.hljs-title,
+.hljs-name,
+.hljs-type {
+  color: #61AFEF !important; /* Light blue for titles/names/types */
+}
+
+.hljs-built_in,
+.hljs-literal {
+  color: #E06C75 !important; /* Light pink/red for built-ins/literals */
+}
+
+.hljs-tag,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-addition {
+  color: #56B6C2 !important; /* Cyan for tags/symbols */
+}
+
+.hljs-deletion {
+  color: #E06C75 !important; /* Red for deletions */
+}
+
+.hljs-emphasis {
+  font-style: italic !important;
+}
+
+.hljs-strong {
+  font-weight: bold !important;
+}
