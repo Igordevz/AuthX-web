@@ -23,7 +23,10 @@ import {
 import { Users, Globe, Key, TrendingUp } from "lucide-react";
 import { getDataDashboard } from "@/context/features/dashboard";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
+// Data straight from the API
 type Metrics = {
   maxRequests: number;
   activeProjects: number;
@@ -51,25 +54,42 @@ type Charts = {
   };
 };
 
-type ChartDataItem = {
+type AppProvider = {
+  id: string;
+  name_app: string;
+};
+
+type BruteData = {
+  app_providers: AppProvider[];
+};
+
+// Processed data for UI
+type UserChartData = {
+  id: string;
   name: string;
   users: number;
+};
+
+type ApiUsageChartData = {
+  name: string;
+  apiCalls: number;
 };
 
 export function Overview() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [charts, setCharts] = useState<Charts | null>(null);
+  const [bruteData, setBruteData] = useState<BruteData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function getData() {
       try {
         const data = await getDataDashboard();
-        console.log("this data to /overview", data);
         setMetrics(data?.metrics ?? null);
         setCharts(data?.charts ?? null);
+        setBruteData(data?.bruteData ?? null);
       } catch (error) {
-        console.error("Error loading dashboard data:", error);
+        console.error("Failed to fetch dashboard data:", error);
       } finally {
         setLoading(false);
       }
@@ -78,19 +98,92 @@ export function Overview() {
   }, []);
 
   if (loading) {
-    return <p className="text-center py-10">Loading dashboard data...</p>;
+    return (
+      <div className="space-y-6">
+        <div>
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-96 mt-2" />
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-6 w-6" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-4 w-40 mt-1" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-48" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[300px] w-full" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-4 w-56" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[300px] w-full" />
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-5 w-16" />
+                  </div>
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-9 w-24" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
-  const chartData: ChartDataItem[] =
-    charts?.usersByApp?.map((item) => ({
-      name: item.appName,
-      users: item.userCount,
-    })) || [];
+  const userChartData: UserChartData[] =
+    charts?.usersByApp
+      ?.map((item) => {
+        const appProvider = bruteData?.app_providers.find(
+          (provider) => provider.name_app === item.appName
+        );
+        if (!appProvider) return null;
 
-  const applicationsData: ChartDataItem[] =
+        return {
+          name: item.appName,
+          users: item.userCount,
+          id: appProvider.id,
+        };
+      })
+      .filter((item): item is UserChartData => item !== null) || [];
+
+  const apiUsageChartData: ApiUsageChartData[] =
     charts?.apiUsageByApp?.map((item) => ({
       name: item.appName,
-      users: item.apiCalls,
+      apiCalls: item.apiCalls,
     })) || [];
 
   const statsData = [
@@ -122,7 +215,11 @@ export function Overview() {
       title: "Total API Usage",
       value: metrics?.totalApiCalls ?? 0,
       icon: TrendingUp,
-      change: `${metrics?.maxRequests ? Math.round((metrics.totalApiCalls / metrics.maxRequests) * 100) : 0}% of limit`,
+      change: `${
+        metrics?.maxRequests
+          ? Math.round((metrics.totalApiCalls / metrics.maxRequests) * 100)
+          : 0
+      }% of limit`,
     },
   ];
 
@@ -161,7 +258,7 @@ export function Overview() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData}>
+              <LineChart data={userChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -177,7 +274,6 @@ export function Overview() {
           </CardContent>
         </Card>
 
-        {/* Applications Overview */}
         <Card>
           <CardHeader>
             <CardTitle>API Usage Overview</CardTitle>
@@ -187,19 +283,18 @@ export function Overview() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={applicationsData}>
+              <BarChart data={apiUsageChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="users" fill="rgb(128, 65, 254)" />
+                <Bar dataKey="apiCalls" fill="rgb(128, 65, 254)" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      {/* Applications List */}
       <Card>
         <CardHeader>
           <CardTitle>Your Applications</CardTitle>
@@ -209,10 +304,10 @@ export function Overview() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {chartData.length > 0 ? (
-              chartData.map((app, index) => (
+            {userChartData.length > 0 ? (
+              userChartData.map((app) => (
                 <div
-                  key={index}
+                  key={app.id}
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
                   <div className="space-y-1">
@@ -228,8 +323,10 @@ export function Overview() {
                       {app.users} users
                     </p>
                   </div>
-                  <Button variant="outline" size="sm">
-                    View Details
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/dashboard/applications/${app.id}`}>
+                      View Details
+                    </Link>
                   </Button>
                 </div>
               ))

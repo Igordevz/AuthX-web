@@ -7,7 +7,10 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Copy, Eye, EyeOff, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
 import { getDataDashboard } from "@/context/features/dashboard"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Input } from "@/components/ui/input"
 
 type Application = {
   id: string
@@ -23,7 +26,9 @@ type Application = {
   owner_email: string
 }
 
-export default function ApplicationDetailPage({ params }: { params: { id: string } }) {
+export default function ApplicationDetailPage() {
+  const params = useParams()
+  const id = params.id as string
   const [app, setApp] = useState<Application | null>(null)
   const [loading, setLoading] = useState(true)
   const [showApiKey, setShowApiKey] = useState(false)
@@ -33,7 +38,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
       try {
         const data = await getDataDashboard()
         if (data?.bruteData?.app_providers) {
-          const foundApp = data.bruteData.app_providers.find((app:any) => app.id === params.id)
+          const foundApp = data.bruteData.app_providers.find((app:any) => app.id === id)
           setApp(foundApp || null)
         }
       } catch (error) {
@@ -42,18 +47,81 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
         setLoading(false)
       }
     }
-    loadData()
-  }, [params.id])
+    if (id) {
+      loadData()
+    }
+  }, [id])
 
   const handleDeleteProject = () => {
-    console.log("Delete project:", params.id)
+    console.log("Delete project:", id)
     // Implement deletion logic here
   }
 
   if (loading) {
     return (
       <DashboardLayout>
-        <div>Loading application details...</div>
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-9 w-36 rounded-md" />
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48 rounded-md" />
+              <Skeleton className="h-5 w-64 rounded-md" />
+            </div>
+            <Skeleton className="h-6 w-16 rounded-full ml-auto" />
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-40 rounded-md" />
+                <Skeleton className="h-4 w-56 rounded-md" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Skeleton className="h-7 w-20 rounded-md" />
+                    <Skeleton className="h-4 w-24 rounded-md" />
+                  </div>
+                  <div className="space-y-1">
+                    <Skeleton className="h-7 w-20 rounded-md" />
+                    <Skeleton className="h-4 w-24 rounded-md" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-48 rounded-md" />
+                  <Skeleton className="h-4 w-48 rounded-md" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-40 rounded-md" />
+                <Skeleton className="h-4 w-56 rounded-md" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24 rounded-md" />
+                  <div className="flex items-center gap-2 mt-1">
+                    <Skeleton className="h-9 flex-1 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24 rounded-md" />
+                  <div className="flex items-center gap-2 mt-1">
+                    <Skeleton className="h-9 flex-1 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                  </div>
+                </div>
+                <div className="flex justify-end mt-6">
+                  <Skeleton className="h-9 w-32 rounded-md" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </DashboardLayout>
     )
   }
@@ -122,7 +190,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
               <div>
                 <label className="text-sm font-medium">Public Key</label>
                 <div className="flex items-center gap-2 mt-1">
-                  <code className="flex-1 rounded bg-muted px-2 py-1 text-sm">{app.public_key}</code>
+                  <Input readOnly value={app.public_key} />
                   <Button size="sm" variant="outline">
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -132,9 +200,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
               <div>
                 <label className="text-sm font-medium">Secret Key</label>
                 <div className="flex items-center gap-2 mt-1">
-                  <code className="flex-1 rounded bg-muted px-2 py-1 text-sm">
-                    {showApiKey ? app.secret_key : "sk_•••••••••••••••••••••••••••••••••••••••••••••••••••"}
-                  </code>
+                  <Input readOnly value={app.secret_key} type={showApiKey ? "text" : "password"} />
                   <Button size="sm" variant="outline" onClick={() => setShowApiKey(!showApiKey)}>
                     {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>

@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { toast } from "sonner";
 
 export const createNewProject = async (name_app:string, description: string) => {
-  const token = Cookies.get("auth"); // pegar cookie no momento da execução
+  const token = Cookies.get("auth"); 
 
   if (!token) {
     toast("Session Expired", {
@@ -30,9 +30,8 @@ export const createNewProject = async (name_app:string, description: string) => 
         label: "Close",
         onClick: () => {},
       },
-    });
+    }); 
     location.replace("/dashboard")
-
     return response.data; 
   } catch (error: any) {
     console.log(error);

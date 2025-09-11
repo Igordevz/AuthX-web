@@ -22,10 +22,13 @@ export function DashboardHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto max-w-7xl flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded bg-color flex items-center justify-center">
-            <span className="text-sm font-bold text-white">A</span>
-          </div>
-          <span className="font-semibold">AuthAPI</span>
+        
+          <div className="flex items-center space-x-2">
+          <span className="text-xl font-normal">
+            <Link href={"/"}>AuthX</Link>
+          </span>
+        </div>
+
         </div>
 
         <div className="flex items-center gap-4">

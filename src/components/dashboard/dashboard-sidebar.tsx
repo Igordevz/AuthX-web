@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { BarChart3, Activity, Settings, FolderOpen } from "lucide-react"
+import { BarChart3, Activity, Settings, FolderOpen, BookText } from "lucide-react"
 
 const navigation = [
   {
@@ -20,6 +20,11 @@ const navigation = [
     name: "Applications",
     href: "/dashboard/applications",
     icon: FolderOpen,
+  },
+  {
+    name: "Docs",
+    href: "/dashboard/documentation",
+    icon: BookText,
   },
   {
     name: "Settings",

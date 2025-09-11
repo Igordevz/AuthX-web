@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Blocks, Code, Users, Zap } from "lucide-react";
 import Image from "next/image";
 import logo from "../../public/logo.png";
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -46,7 +47,7 @@ export function Hero() {
               size="lg"
               className="bg-violet-400 text-black hover:bg-violet-500"
             >
-              Get Started
+             <Link href={"/dashboard"}> Get Started</Link>
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button size="lg" variant="outline">

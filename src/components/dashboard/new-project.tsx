@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,13 +23,14 @@ import { Textarea } from "@/components/ui/textarea"; // Adicionado import para T
 
 const projectSchema = z.object({
   name: z.string().min(1, "Project name is required"),
-  description: z.string().optional(), // Adicionado campo de descrição
+  description: z.string().optional(),
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
 
 export default function NewProjectForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -38,12 +40,19 @@ export default function NewProjectForm() {
     resolver: zodResolver(projectSchema),
   });
 
-  const onSubmit = async (data: ProjectFormData, e:any) => {
+  const onSubmit = async (data: ProjectFormData, e: any) => {
     setIsSubmitting(true);
-    e.preventDefault(); 
+    e.preventDefault();
 
     try {
-     await createNewProject(data?.name, data?.description || "") // Passando a descrição (string vazia se for undefined)
+      const newProject = await createNewProject(
+        data?.name,
+        data?.description || ""
+      ); // Passando a descrição (string vazia se for undefined)
+      console.log("New project created:", newProject);
+      if (newProject && newProject.app && newProject.app.id) {
+        router.push(`/dashboard/applications/${newProject.app.id}`);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -88,7 +97,7 @@ export default function NewProjectForm() {
               id="description"
               placeholder="Provide a brief description of your project"
               {...register("description")}
-              className="resize-y min-h-[80px]" 
+              className="resize-y min-h-[80px]"
             />
           </div>
 
