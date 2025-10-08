@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
 
   if (token) {
     try {
-      const res = await fetch(`${process.env.API}/token`, {
+      const res = await fetch(`http://localhost:3333/token`, {
         headers: {
           jwt: token,
         },

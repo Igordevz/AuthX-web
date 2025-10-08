@@ -28,7 +28,6 @@ export const LoginAdmin = async (user:ZUser) => {
       password: user.password
     })
     Cookies.set("auth", token.data.token)
-   
     location.replace("/dashboard")
   } catch (error) {
     toast("Invalid Login", {

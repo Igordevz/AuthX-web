@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff, User, Mail, Lock } from "lucide-react"
-import { registerAdmin } from "@/context/features/Admin"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
+import { registerAdmin } from "@/context/features/Admin";
 
 // 🔹 Schema de validação com Zod
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-})
+});
 
-type RegisterFormData = z.infer<typeof registerSchema>
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterForm() {
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -30,27 +30,28 @@ export default function RegisterForm() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-  })
+  });
 
   const onSubmit = async (data: RegisterFormData) => {
     const user = {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-    }
-
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    };
+    console.log(user);
     try {
       const data = await registerAdmin(user);
-      console.log(data)
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-center text-xl">Account Information</CardTitle>
+        <CardTitle className="text-center text-xl">
+          Account Information
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -67,7 +68,9 @@ export default function RegisterForm() {
                 className={`pl-10 ${errors.name ? "border-red-500" : ""}`}
               />
             </div>
-            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+            {errors.name && (
+              <p className="text-sm text-red-500">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Email */}
@@ -83,7 +86,9 @@ export default function RegisterForm() {
                 className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
               />
             </div>
-            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password */}
@@ -96,17 +101,25 @@ export default function RegisterForm() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Minimum 8 characters"
                 {...register("password")}
-                className={`pl-10 pr-10 ${errors.password ? "border-red-500" : ""}`}
+                className={`pl-10 pr-10 ${
+                  errors.password ? "border-red-500" : ""
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
-            {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Submit */}
@@ -133,5 +146,5 @@ export default function RegisterForm() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
