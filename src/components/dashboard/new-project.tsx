@@ -17,9 +17,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { User } from "lucide-react";
-import { registerAdmin } from "@/context/features/Admin"; // This import seems unused, but I'll keep it as it was in the original file.
 import { createNewProject } from "@/context/features/Projects";
-import { Textarea } from "@/components/ui/textarea"; // Adicionado import para Textarea
+import { Textarea } from "@/components/ui/textarea"; 
 
 const projectSchema = z.object({
   name: z.string().min(1, "Project name is required"),
@@ -48,7 +47,7 @@ export default function NewProjectForm() {
       const newProject = await createNewProject(
         data?.name,
         data?.description || ""
-      ); // Passando a descrição (string vazia se for undefined)
+      );
       console.log("New project created:", newProject);
       if (newProject && newProject.app && newProject.app.id) {
         router.push(`/dashboard/applications/${newProject.app.id}`);

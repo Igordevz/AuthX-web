@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 export const createNewProject = async (name_app:string, description: string) => {
   const token = Cookies.get("auth"); 
-
+  
   if (!token) {
     toast("Session Expired", {
       description: "No authentication token found. Please sign in again.",
@@ -34,9 +34,7 @@ export const createNewProject = async (name_app:string, description: string) => 
     location.replace("/dashboard")
     return response.data; 
   } catch (error: any) {
-    console.log(error);
-    Cookies.remove("auth");
-    location.reload();
+    console.log(error)
     toast("Session Expired", {
       description: "Your authentication token has expired. Please sign in again.",
       action: {
